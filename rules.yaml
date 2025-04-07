@@ -1,0 +1,14 @@
+rules:
+  - id: user-comment-xss
+    languages: [java]
+    message: "Potential XSS vulnerability: Untrusted input is being printed directly to the response without sanitization."
+    severity: WARNING
+    mode: taint
+    pattern-sources:
+      - pattern: "$UNTRUSTED_INPUT = $REQUEST.getParameter(...);"
+    pattern-sinks:
+      - pattern: "$RESPONSE.getWriter().print($UNTRUSTED_INPUT);"
+      - pattern: "$RESPONSE.getWriter().println($UNTRUSTED_INPUT);"
+      - pattern: "System.out.println($UNTRUSTED_INPUT);"
+    pattern-sanitizers:
+      - pattern: "Encode.forHtml($UNTRUSTED_INPUT);"
